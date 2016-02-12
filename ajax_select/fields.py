@@ -64,16 +64,24 @@ class AutoCompleteSelectWidget(forms.widgets.TextInput):
             try:
                 obj = objs[0]
             except IndexError:
-                raise Exception("%s cannot find object:%s" % (lookup, value))
-            url = lookup.get_item_url(obj)
-            item_display = lookup.format_item_display(obj)
-            if url:
-                current_repr = '<a href="{}" target="_blank">{}</a>'.format(
-                    url, item_display,
+                current_repr = '''
+                    <div class="label">'
+                        {} with id: {} not found
+                    </div>'''.format(
+                    self.model._meta.verbose_name, value
                 )
             else:
-                current_repr = item_display
-            initial = [current_repr, obj.pk]
+                url = lookup.get_item_url(obj)
+                item_display = lookup.format_item_display(obj)
+                if url:
+                    current_repr = '''
+                        <a href="{}" target="_blank">{}</a>
+                    '''.format(
+                        url, item_display,
+                    )
+                else:
+                    current_repr = item_display
+                initial = [current_repr, obj.pk]
 
         if self.show_help_text:
             help_text = self.help_text
